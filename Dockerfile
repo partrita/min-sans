@@ -4,15 +4,20 @@ FROM python:3.9-slim
 # 2. Set a working directory
 WORKDIR /app
 
-# 3. Install fontmake and its dependencies
-# It's good practice to also install gftools
-RUN pip install fontmake gftools
+# 3. Install necessary packages including fontforge and python3-fontforge
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    fontforge \
+    python3-fontforge \
+    python3-argparse && \
+    pip install fontmake gftools && \
+    rm -rf /var/lib/apt/lists/*
 
-# 4. Copy the sources directory from the host into the image
-COPY sources /app/sources
+# 5. Copy the sources directory from the host into the image
+COPY sources /app/sources 
+COPY FontPatcher /app/FontPatcher
 
-# 5. Create an output directory for the fonts
-RUN mkdir /app/fonts
+# 6. Create an output directory for the fonts
+RUN mkdir -p /app/fonts
 
-# 6. Define a default command
+# 7. Define a default command
 CMD ["ls", "-R", "/app"]
